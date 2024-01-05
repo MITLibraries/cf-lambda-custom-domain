@@ -1,0 +1,26 @@
+### This is the Terraform-generated dev-deploy-lambda.yml.yml workflow for    ###
+### cf-lambda-custom-domain application. It will publish the Lambda zip to    ###
+### S3 in Dev1 and optionally re-apply Terraform for the                      ###
+### workloads-libraries-website-dev workspace.                                ###
+name: Dev Redeploy CF Distro Only
+
+on:
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  deploy-lambda:
+    name: Push zip to S3 and Deploy CloudFront Distribution
+    uses: mitlibraries/.github/.github/workflows/cf-lambda-shared-deploy.yml@cf-lambda-publish
+    secrets: inherit
+    with:
+      AWS_REGION: us-east-1
+      GHA_ROLE: ledge-custom-domain-gha-dev
+      ENVIRONMENT: dev
+      UPLOAD_ZIP: false
+      ZIP_FILE_NAME: cf-lambda-custom-domain
+      TF_WORKSPACE: workloads-libraries-website-dev
+      TF_AUTO_APPLY: true

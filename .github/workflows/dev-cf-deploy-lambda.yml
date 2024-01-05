@@ -1,4 +1,8 @@
-name: Dev Lambda Deploy
+### This is the Terraform-generated dev-deploy-lambda.yml.yml workflow for    ###
+### cf-lambda-custom-domain application. It will publish the Lambda zip to    ###
+### S3 in Dev1 and optionally re-apply Terraform for the                      ###
+### workloads-libraries-website-dev workspace.                                ###
+name: Dev CF Lambda@Edge Full Deploy
 
 on:
   workflow_dispatch:
@@ -18,5 +22,5 @@ jobs:
       ENVIRONMENT: dev
       UPLOAD_ZIP: true
       ZIP_FILE_NAME: cf-lambda-custom-domain
-      TF_WORKSPACE: libraries-website-dev
+      TF_WORKSPACE: workloads-libraries-website-dev
       TF_AUTO_APPLY: true
