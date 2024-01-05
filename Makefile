@@ -40,3 +40,12 @@ lint-apply: # apply changes with 'black' and resolve 'fixable errors' with 'ruff
 
 black-apply: # apply changes with 'black'
 	pipenv run black .
+
+## Terraform Generated Makefile additions        ##
+## ---- Local Developer Deployment Commands ---- ##
+        
+dev-deploy:
+	rm -rf cf-lambda-custom-domain.py.zip
+	zip -j cf-lambda-custom-domain.py.zip lambdas/*
+	aws s3api put-object --bucket shared-files-222053980223 --body cf-lambda-custom-domain.py.zip --key files/cf-lambda-custom-domain.py.zip
+	rm -rf cf-lambda-custom-domain.py.zip
