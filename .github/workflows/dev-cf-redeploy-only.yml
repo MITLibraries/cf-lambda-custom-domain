@@ -1,6 +1,6 @@
 ### This is the Terraform-generated GitHub Actions workflow for cf-lambda    ###
-### applications for dev/stage/prod. It will publish the Lambda zip to S3    ###
-### and optionally re-apply Terraform in the Terraform Cloud                 ###
+### applications for dev/stage/prod. It will skip the zip upload to S3       ###
+### and just automatically re-apply Terraform in the Terraform Cloud         ###
 ### workloads-libraries-website-dev workspace.                               ###
 name: Dev Redeploy CF Distribution Only
 
