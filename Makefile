@@ -41,11 +41,18 @@ lint-apply: # apply changes with 'black' and resolve 'fixable errors' with 'ruff
 black-apply: # apply changes with 'black'
 	pipenv run black .
 
-## Terraform Generated Makefile additions        ##
-## ---- Local Developer Deployment Commands ---- ##
-        
-dev-deploy:
+
+##   Terraform Generated Makefile Additions                                   ##
+##   ---- Local Developer Deployment Commands ----                            ##
+
+# It is expected that the `create-zip` command is updated by the 
+# developer to match the needs of the application. This is just 
+# the default zip method for a very simple function.
+create-zip: # Create a .zip file of code
 	rm -rf cf-lambda-custom-domain.py.zip
 	zip -j cf-lambda-custom-domain.py.zip lambdas/*
-	aws s3api put-object --bucket shared-files-222053980223 --body cf-lambda-custom-domain.py.zip --key files/cf-lambda-custom-domain.py.zip
-	rm -rf cf-lambda-custom-domain.py.zip
+
+upload-zip: # Upload the .zip file to AWS S3 bucket
+	aws s3api put-object --bucket shared-files-$$(aws sts get-caller-identity --query Account --output text) --body cf-lambda-custom-domain.py.zip --key files/cf-lambda-custom-domain.py.zip
+
+##  End of Terraform Generated Makefile Additions                             ##

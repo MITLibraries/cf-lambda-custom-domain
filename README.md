@@ -1,28 +1,10 @@
-# python-lambda-template
+# cf-lambda-custom-domain
 
-A template repository for creating Python lambda functions.
+The Lamba@Edge function that handles path selection in the S3 origin for our custom domain CloudFront distribution.
 
-## Repo setup (delete this section and above after initial function setup)
+## lambda_edge.py
 
-1. Rename "my_function" to the desired initial function name across the repo. (May be helpful to do a project-wide find-and-replace).
-2. Update Python version if needed (note: AWS lambda cannot currently support versions higher than 3.9).
-3. Install all dependencies with `make install`  to create initial Pipfile.lock with latest dependency versions.
-4. Add initial function description to README and update initial required ENV variable documentation as needed.
-5. Update license if needed (check app-specific dependencies for licensing terms).
-6. Check Github repository settings:
-   - Confirm repo branch protection settings are correct (see [dev docs](https://mitlibraries.github.io/guides/basics/github.html) for details)
-   - Confirm that all of the following are enabled in the repo's code security and analysis settings:
-      - Dependabot alerts
-      - Dependabot security updates
-      - Secret scanning
-7. Create a Sentry project for the app if needed (we want this for most apps):
-   - Send initial exceptions to Sentry project for dev, stage, and prod environments to create them.
-   - Create an alert for the prod environment only, with notifications sent to the appropriate team(s).
-   - If *not* using Sentry, delete Sentry configuration from my_function.py and test_my_function_.py, and remove sentry_sdk from project dependencies.
-
-# my_function
-
-Description of the function/functions.
+See the Reference Material section for details on the origins of this code. This is a simple Python application to parse the `origin-request` payload in CloudFront and route the request to the correct subfolder based on the hostname in the domain of the request. There are currently no real tests to verify the functionality locally, but these will be coming soon.
 
 ## Development
 
@@ -34,41 +16,33 @@ Description of the function/functions.
 
 ## Required ENV
 
-- `SENTRY_DSN` = If set to a valid Sentry DSN, enables Sentry exception monitoring. This is not needed for local development.
-- `WORKSPACE` = Set to `dev` for local development, this will be set to `stage` and `prod` in those environments by Terraform.
+There is **NO** ENV since this code must run in Lambda@Edge which does not have ENV.
 
 ## Running locally
 
-<https://docs.aws.amazon.com/lambda/latest/dg/images-test.html>
+Other than the [tests/test_lambda_edge.py](./tests/test_lambda_edge.py), there are no other local run options at this time. More coming soon.
 
-- Build the container:
+## Deployment
 
-  ```bash
-  docker build -t my_function:latest .
-  ```
+### Dev1 testing
 
-- Run the default handler for the container:
+The `make create-zip` command will package up the code into a `.zip` file, ready for upload to S3. The `make upload-zip` will upload the `.zip` package of the code to the `shared-files-<AWS_ACCT_NO>` bucket so that it is available for Terraform. The [mitlib-tf-workloads-libraries-website](https://github.com/MITLibraries/mitlib-tf-workloads-libraries-website) Terraform code is responsible for taking the `.zip` from S3, packaging it into a Lambda function, deploying a new version of the Lambda function, and then updating the CloudFront custom domain distribution to use the new version of the Lambda for the `origin-request` Lambda@Edge.
 
-  ```bash
-  docker run -e WORKSPACE=dev -p 9000:8080 my_function:latest
-  ```
+It is **NOT** possible to re-deploy the CloudFront distribution from the CLI (for now). Instead, there are GitHub Actions workflows in this repository that can be manually triggered from the GitHub web UI. One of those workflows will just redeploy CloudFront (it assumes that the developer has run `make upload-zip` first). This allows the developer to push an updated version of the application to Dev1 and test it in CloudFront without having to push work-in-progress code to GitHub.
 
-- Post to the container:
+It is also possible to run a more complete build-and-deploy workflow for Dev1 via the GitHub web UI: There is a second GitHub Actions workflow in this repository that can be manually trigger that will also run the `make create-zip` and `make upload-zip` with the version of code in GitHub and then redeploy CloudFront. This should be done before any PR is opened against the `main` branch.
 
-  ```bash
-  curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{}'
-  ```
+### Automation
 
-- Observe output:
+In line with our other CloudFront related workflows (see [web-images-static](https://github.com/MITLibraries/web-images-static)), there are automated workflows for merge to `main` and tagged releases on `main` that will automatically deploy this application to the Stage-Workloads and Prod-Workloads AWS Accounts, respectively.
 
-  ```
-  "You have successfully called this lambda!"
-  ```
+## Reference Material
 
-## Running a different handler in the container
+The following online resources were helpful in building the vanity hostname setup and Lambda@Edge function.
 
-If this repo contains multiple lambda functions, you can call any handler you copy into the container (see Dockerfile) by name as part of the `docker run` command:
-
-```bash
-docker run -p 9000:8080 my_function:latest lambdas.<a-different-module>.lambda_handler
-```
+- [How to use Lambda@Edge with Terraform](https://advancedweb.hu/how-to-use-lambda-edge-with-terraform/)
+- [How to use CloudFront Functions to Change the Origin Request Path](https://advancedweb.hu/how-to-use-cloudfront-functions-to-change-the-origin-request-path/)
+- [AWS CloudFront Developer Guide: Lambda@Edge Examples](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-examples.html)
+- [Multiple Websites with One S3 Bucket](https://opsdocks.com/posts/multiple-websites-one-s3/)
+- [CloudFront with Mulitple Domains](https://moelholm.com/blog/2020/06/25/cloudfront-multiple-domains)
+- [AWS CloudFront Developer Guide: Lambda Event Structure](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-event-structure.html#request-event-fields)

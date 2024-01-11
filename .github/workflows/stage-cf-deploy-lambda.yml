@@ -1,11 +1,18 @@
 ### This is the Terraform-generated GitHub Actions workflow for cf-lambda    ###
 ### applications for dev/stage/prod. It will publish the Lambda zip to S3    ###
 ### and optionally re-apply Terraform in the Terraform Cloud                 ###
-### workloads-libraries-website-dev workspace.                               ###
-name: Dev CF Lambda@Edge Full Deploy
+### workloads-libraries-website-stage workspace.                             ###
+name: Stage CF Lambda@Edge Full Deploy
 
 on:
   workflow_dispatch:
+  ## We are skipping automation for now  
+  # push:
+  #   branches:
+  #     - main
+  #   paths-ignore:
+  #     - ".github/**"
+  #     - "tests/**"
 
 defaults:
   run:
@@ -18,8 +25,8 @@ jobs:
     secrets: inherit
     with:
       AWS_REGION: us-east-1
-      ENVIRONMENT: dev
-      GHA_ROLE: ledge-custom-domain-gha-dev
+      ENVIRONMENT: stage
+      GHA_ROLE: ledge-custom-domain-gha-stage
       TF_AUTO_APPLY: true
-      TF_WORKSPACE: workloads-libraries-website-dev
+      TF_WORKSPACE: workloads-libraries-website-stage
       UPLOAD_ZIP: true
