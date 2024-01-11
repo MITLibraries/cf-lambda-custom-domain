@@ -1,0 +1,25 @@
+### This is the Terraform-generated GitHub Actions workflow for cf-lambda    ###
+### applications for dev/stage/prod. It will skip the zip upload to S3       ###
+### and just automatically re-apply Terraform in the Terraform Cloud         ###
+### workloads-libraries-website-dev workspace.                               ###
+name: Dev Redeploy CF Distribution Only
+
+on:
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  deploy-lambda:
+    name: Push zip to S3 and Deploy CloudFront Distribution
+    uses: mitlibraries/.github/.github/workflows/cf-lambda-shared-deploy.yml@main
+    secrets: inherit
+    with:
+      AWS_REGION: us-east-1
+      ENVIRONMENT: dev
+      GHA_ROLE: ledge-custom-domain-gha-dev
+      TF_AUTO_APPLY: true
+      TF_WORKSPACE: workloads-libraries-website-dev
+      UPLOAD_ZIP: false
