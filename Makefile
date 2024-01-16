@@ -35,8 +35,7 @@ safety: # check for security vulnerabilities and verify Pipfile.lock is up-to-da
 	pipenv check
 	pipenv verify
 
-lint-apply: # apply changes with 'black' and resolve 'fixable errors' with 'ruff'
-	black-apply 
+lint-apply: black-apply # apply changes with 'black'
 
 black-apply: # apply changes with 'black'
 	pipenv run black .
