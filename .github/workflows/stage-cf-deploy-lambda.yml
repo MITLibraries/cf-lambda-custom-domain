@@ -5,14 +5,13 @@
 name: Stage CF Lambda@Edge Full Deploy
 
 on:
-  workflow_dispatch:
-  ## We are skipping automation for now  
-  # push:
-  #   branches:
-  #     - main
-  #   paths-ignore:
-  #     - ".github/**"
-  #     - "tests/**"
+  workflow_dispatch: 
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - ".github/**"
+      - "tests/**"
 
 defaults:
   run:
