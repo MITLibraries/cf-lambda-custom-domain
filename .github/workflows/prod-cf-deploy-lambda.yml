@@ -1,7 +1,9 @@
 ### This is the Terraform-generated GitHub Actions workflow for cf-lambda    ###
 ### applications for dev/stage/prod. It will publish the Lambda zip to S3    ###
-### and automatically re-apply Terraform in the Terraform Cloud              ###
-### workloads-libraries-website-prod workspace.                              ###
+### and automatically run Terraform in the Terraform Cloud                   ###
+### workloads-libraries-website-prod workspace. It will NOT auto-apply in    ###
+### Terraform Cloud; rather, TfC will wait for human input to either cancel  ###
+### or apply the result.                                                     ###
 name: Prod CF Lambda@Edge Full Deploy
 
 on:
