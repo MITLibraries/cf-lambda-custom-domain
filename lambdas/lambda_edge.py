@@ -7,7 +7,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def lambda_handler(event, context):
+def handler(event, context):
     ## Capture the request header
     request = event["Records"][0]["cf"]["request"]
     ## The following lines are left here but commented out for any future debugging
