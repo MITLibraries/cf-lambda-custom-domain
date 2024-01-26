@@ -17,7 +17,11 @@ defaults:
 
 jobs:
   deploy-lambda:
-    if: github.ref == 'refs/heads/main'
+    # We need to restrict this workflow to only run on releases on the main
+    # branch while also allowing for manual runs in the GitHub web UI. The
+    # GitHub context is different between releases and commits, so we have
+    # to check two different values before we decide to run this.
+    if: ${{ github.ref == 'refs/heads/main' || github.event.release.target_commitish == 'main' }}
     name: Push zip to S3 and Deploy CloudFront Distribution
     uses: mitlibraries/.github/.github/workflows/cf-lambda-shared-deploy.yml@main
     secrets: inherit
