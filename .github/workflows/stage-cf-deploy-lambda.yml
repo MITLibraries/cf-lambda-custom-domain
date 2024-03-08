@@ -18,7 +18,10 @@ defaults:
     shell: bash
 
 jobs:
-  deploy-lambda:
+  deploy-lambda:   
+  # We need to restrict this workflow to only run on the main branch whether
+  # it's through automation or through a manual trigger in the web UI.
+    if: ${{ github.ref == 'refs/heads/main' }}
     name: Push zip to S3 and Deploy CloudFront Distribution
     uses: mitlibraries/.github/.github/workflows/cf-lambda-shared-deploy.yml@main
     secrets: inherit
